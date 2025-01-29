@@ -11,6 +11,8 @@
 #include <string.h> // args manager.
 #define PS1_PROFILE_FILE "C:/LegacyApp/powershell/Microsoft.PowerShell_profile.ps1"
 #define PS1_COMMAND "powershell -C start-process %s"
+#define TERMINAL_SETTINGS "%LOCALAPPDATA%\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json"
+#define OWN_TERMINAL "C:\\LegacyApp\\powershell\\PowerShell-master\\terminal_settings.json"
 #define URL_API "https://github.com/PowerShell/PowerShell/releases/download/v%s/PowerShell-%s-win-x64.zip"
 #define PWSH_SITE "https://github.com/JuanJoseSoloraznoCarrillo/PowerShell/archive/refs/heads/master.zip"
 #define FOLDER_INST "C:\\LegacyApp\\powershell"
@@ -89,9 +91,7 @@ int download_pwsh_suite(char *buffer){
     Sleep(5000);
     move_file("%USERPROFILE%\\Downloads\\PowerShell-master.zip","C:\\LegacyApp\\powershell\\");
     unzip("C:/LegacyApp/powershell/PowerShell-master.zip","C:/LegacyApp/powershell/");
-    printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-    printf("+++                             EXECUTION SUCCESS\n");
-    printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+
 }
 int create_ps1_file(){
     printf("[+] Creating ps1 file ...\n");
@@ -111,6 +111,16 @@ int create_ps1_file(){
  */
 int main(int argc,char *argv[]){
     char *arg_version = NULL;
+    OSVERSIONINFO os_info;
+    os_info.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+    GetVersionEx(&os_info);
+    if (os_info.dwMajorVersion == 10 && os_info.dwBuildNumber >= 22000){
+        printf("___________________________________________________");
+        printf("  [!]    WINDOWS VERSION NOT COMPATIBLE!");
+        printf("  [?]   THIS WORKS ONLY WITH WINDOWS 11 OS");
+        printf("---------------------------------------------------");
+        return 1;
+    }
     if(argc>1){
         if(strcmp(argv[1],"version")==0||strcmp(argv[1],"-version")==0||strcmp(argv[1],"v")==0||strcmp(argv[1],"-v")==0){
             version = argv[2];
@@ -148,5 +158,11 @@ int main(int argc,char *argv[]){
     if(create_ps1_file()==1){
         return 1;
     }
+    printf("[+] Moving Terminal-Icons module ...\n");
     rename("C:\\LegacyApp\\powershell\\PowerShell-master\\Modules\\Terminal-Icons","C:\\LegacyApp\\powershell\\Modules\\Terminal-Icons");
+    printf("[+] Moving Terminal settings ...\n");
+    move_file(OWN_TERMINAL,TERMINAL_SETTINGS);
+    printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+    printf("+++                             INSTALLATION SUCCESS\n");
+    printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
 }
