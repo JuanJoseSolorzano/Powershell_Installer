@@ -26,10 +26,10 @@ void help_panel(){
     printf("\t\tps1Environment.exe [-v | -version | version | v] <version. eg: 7.4.7>\n");
 }
 void init_print(const char *version){
-    printf("**************************************************************************\n");
-    printf("**                    PS1 Suite Configuration\n");
-    printf("**                    PowerShell Version %s\n",version);
-    printf("**************************************************************************\n");
+    printf("***********************************************************************************************\n");
+    printf("**                               PS1 Suite Configuration\n");
+    printf("**                              PowerShell Version %s\n",version);
+    printf("***********************************************************************************************\n");
 
 }
 int url_exists(const char *link){
@@ -80,7 +80,7 @@ int install_pwsh(){
     move_file("%USERPROFILE%\\Downloads\\PowerShell-7.4.7-win-x64.zip","C:\\LegacyApp\\powershell\\");
     unzip("C:/LegacyApp/powershell/PowerShell-7.4.7-win-x64.zip","C:/LegacyApp/powershell/");
     printf("[*] Powershell installation -> Done.\n");
-    printf("========================================================================================\n");
+    printf("===============================================================================================\n");
     return 1;
 }
 int download_pwsh_suite(char *buffer){
@@ -162,7 +162,7 @@ int main(int argc,char *argv[]){
     rename("C:\\LegacyApp\\powershell\\PowerShell-master\\Modules\\Terminal-Icons","C:\\LegacyApp\\powershell\\Modules\\Terminal-Icons");
     printf("[+] Moving Terminal settings ...\n");
     move_file(OWN_TERMINAL,TERMINAL_SETTINGS);
-    printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-    printf("+++                             INSTALLATION SUCCESS\n");
-    printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+    printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+    printf("+++                              INSTALLATION SUCCESS\n");
+    printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
 }
