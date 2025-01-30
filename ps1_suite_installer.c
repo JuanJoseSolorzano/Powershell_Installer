@@ -10,7 +10,7 @@
 #include <time.h>
 #include <string.h> // args manager.
 #define PS1_PROFILE_FILE "C:/LegacyApp/powershell/Microsoft.PowerShell_profile.ps1"
-#define PS1_COMMAND "powershell -C start-process %s"
+#define PS1_COMMAND "start %s"
 #define TERMINAL_SETTINGS "%LOCALAPPDATA%\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json"
 #define OWN_TERMINAL "C:\\LegacyApp\\powershell\\PowerShell-master\\terminal_settings.json"
 #define URL_API "https://github.com/PowerShell/PowerShell/releases/download/v%s/PowerShell-%s-win-x64.zip"
@@ -30,7 +30,6 @@ void init_print(const char *version){
     printf("**                               PS1 Suite Configuration\n");
     printf("**                              PowerShell Version %s\n",version);
     printf("***********************************************************************************************\n");
-
 }
 int url_exists(const char *link){
     char command[512];
@@ -49,7 +48,7 @@ void clear_buffer(char *buffer){
 int unzip(char target[],char destination[]){
     printf("[+] Extracting file: %s ...\n",target);
     char cmd_buf[MAX_PATH];
-    sprintf(cmd_buf,"tar -xf \"%s\" -C \"%s\"",target,destination);
+    sprintf(cmd_buf,"C:/Windows/SysWOW64/tar.exe -xf \"%s\" -C \"%s\"2>NUL",target,destination);
     system(cmd_buf);
     printf("[+] Unziped file: %s\n",destination);
 }
@@ -114,11 +113,13 @@ int main(int argc,char *argv[]){
     OSVERSIONINFO os_info;
     os_info.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
     GetVersionEx(&os_info);
-    if (os_info.dwMajorVersion == 10 && os_info.dwBuildNumber >= 22000){
-        printf("___________________________________________________");
-        printf("  [!]    WINDOWS VERSION NOT COMPATIBLE!");
-        printf("  [?]   THIS WORKS ONLY WITH WINDOWS 11 OS");
-        printf("---------------------------------------------------");
+    if (os_info.dwMajorVersion == 10 && os_info.dwBuildNumber <= 22000){
+        printf("___________________________________________________\n");
+        printf("  [!]    WINDOWS VERSION NOT COMPATIBLE!\n");
+        printf("  [?]   THIS WORKS ONLY WITH WINDOWS 11 OS\n");
+        printf("---------------------------------------------------\n");
+        printf("Press any key ....\n");
+        getchar();
         return 1;
     }
     if(argc>1){
@@ -162,6 +163,13 @@ int main(int argc,char *argv[]){
     rename("C:\\LegacyApp\\powershell\\PowerShell-master\\Modules\\Terminal-Icons","C:\\LegacyApp\\powershell\\Modules\\Terminal-Icons");
     printf("[+] Moving Terminal settings ...\n");
     move_file(OWN_TERMINAL,TERMINAL_SETTINGS);
+    printf("[+] Lilex Font Installation ...\n");
+    system("start https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/Lilex.zip");
+    system("mkdir \"%USERPROFILE%/Downloads/fonts\"");
+    Sleep(5000);
+    system("C:/Windows/SysWOW64/tar.exe -xf \"%USERPROFILE%/Downloads/Lilex.zip\" -C \"%USERPROFILE%/Downloads/fonts\"2>NUL");
+    system("start %USERPROFILE%/Downloads/fonts/LilexNerdFontPropo-Regular.ttf");
+    system("rm %USERPROFILE%/Downloads/Lilex.zip");
     printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
     printf("+++                              INSTALLATION SUCCESS\n");
     printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
