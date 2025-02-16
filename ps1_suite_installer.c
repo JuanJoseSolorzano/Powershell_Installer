@@ -9,13 +9,14 @@
 #include <windows.h> // sleep and time.h file
 #include <time.h>
 #include <string.h> // args manager.
+#define SUITE_INSTALLATION "%HOMEPATH%\\.powershellsuite"
 #define PS1_PROFILE_FILE "C:/LegacyApp/powershell/Microsoft.PowerShell_profile.ps1"
 #define PS1_COMMAND "start %s"
-#define TERMINAL_SETTINGS "%LOCALAPPDATA%\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json"
-#define OWN_TERMINAL "C:\\LegacyApp\\powershell\\PowerShell-master\\terminal_settings.json"
+#define TERMINAL_SETTINGS_PC "%LOCALAPPDATA%\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json"
+#define TERMINAL_SETTINGS "C:\\LegacyApp\\powershell\\PowerShell-master\\terminal_settings.json"
 #define URL_API "https://github.com/PowerShell/PowerShell/releases/download/v%s/PowerShell-%s-win-x64.zip"
 #define PWSH_SITE "https://github.com/JuanJoseSoloraznoCarrillo/PowerShell/archive/refs/heads/master.zip"
-#define FOLDER_INST "C:\\LegacyApp\\powershell"
+#define PS1_FOLDER_INSTALLATION "C:\\LegacyApp\\powershell"
 const char *version = "7.4.7";
 
 /**
@@ -40,7 +41,7 @@ int url_exists(const char *link){
 int folder_exists(char *path){
     struct stat st;
     int exists = stat(path,&st) == 0 && S_ISDIR(st.st_mode);
-    return exists;
+    return exists; // 1 when folder exists
 }
 void clear_buffer(char *buffer){
     buffer[0] = '\0';
@@ -69,8 +70,8 @@ int download_pwsh(char *buffer,char *url){
     return 1;
 }
 int create_folder(char *buffer){
-    printf("[+] Creating installatioin folder: '%s'\n",FOLDER_INST);
-    sprintf(buffer,"mkdir %s",FOLDER_INST);
+    printf("[+] Creating installatioin folder: '%s'\n",PS1_FOLDER_INSTALLATION);
+    sprintf(buffer,"mkdir %s",PS1_FOLDER_INSTALLATION);
     system(buffer);
     clear_buffer(buffer);
     return 1;
@@ -82,15 +83,19 @@ int install_pwsh(){
     printf("===============================================================================================\n");
     return 1;
 }
-int download_pwsh_suite(char *buffer){
+void download_pwsh_suite(char *buffer,char *suitePathInstall){
     printf("[+] Downloading ps1 suite ...\n");
+    if(folder_exists(suitePathInstall)==1){
+        system("rmdir /s /q %USERPROFILE%\\.powershellsuite");
+    }
+    system("mkdir %USERPROFILE%\\.powershellsuite");
     sprintf(buffer,PS1_COMMAND,PWSH_SITE);
     system(buffer);
     clear_buffer(buffer);
     Sleep(5000);
-    move_file("%USERPROFILE%\\Downloads\\PowerShell-master.zip","C:\\LegacyApp\\powershell\\");
-    unzip("C:/LegacyApp/powershell/PowerShell-master.zip","C:/LegacyApp/powershell/");
-
+    move_file("%USERPROFILE%\\Downloads\\PowerShell-master.zip",suitePathInstall);
+    unzip("%USERPROFILE%/.powershellsuite/PowerShell-master.zip",suitePathInstall);
+    system("rm %USERPROFILE%/.powershellsuite/PowerShell-master.zip");
 }
 int create_ps1_file(){
     printf("[+] Creating ps1 file ...\n");
@@ -100,7 +105,7 @@ int create_ps1_file(){
         printf("[!] Error: Unable to create file.\n");
         return 1;
     }
-    fprintf(file,"$profile_prompt = \"C:\\LegacyApp\\powershell\\PowerShell-master\\Profile.ps1\"\nImport-Module -Name $profile_prompt\n");
+    fprintf(file,"$profile_prompt = \"$home\\.powershellsuite\\PowerShell-master\\Profile.ps1\"\nImport-Module -Name $profile_prompt\n");
     fclose(file);
     return 0;
 }
@@ -130,6 +135,10 @@ int main(int argc,char *argv[]){
             help_panel();
         }
     }
+    char profile[MAX_PATH];
+    char fullPathProfile[MAX_PATH];
+    GetEnvironmentVariable("USERPROFILE",profile,MAX_PATH);
+    snprintf(fullPathProfile,MAX_PATH,"%s\\.powershellsuite",profile);
     char url_api[MAX_PATH];
     sprintf(url_api,URL_API,version,version);
     if(url_exists(url_api)==1){
@@ -143,11 +152,11 @@ int main(int argc,char *argv[]){
         printf("[!] Error: while download the PowerShell-7.4.7-win-x64.zip");
         return 1;
     }
-    if(!folder_exists(FOLDER_INST)){
+    if(!folder_exists(PS1_FOLDER_INSTALLATION)){
        create_folder(cmd_buffer);
     }else{
         printf("[*] Powershell installation found, removing folder ...\n");
-        sprintf(cmd_buffer,"rmdir /s /q %s",FOLDER_INST);
+        sprintf(cmd_buffer,"rmdir /s /q %s",PS1_FOLDER_INSTALLATION);
         system(cmd_buffer);
         clear_buffer(cmd_buffer);
         create_folder(cmd_buffer);
@@ -155,14 +164,19 @@ int main(int argc,char *argv[]){
     if(!install_pwsh()){
         return 1;
     }
-    download_pwsh_suite(cmd_buffer);
+    download_pwsh_suite(cmd_buffer,fullPathProfile);
     if(create_ps1_file()==1){
         return 1;
     }
+    clear_buffer(cmd_buffer);
     printf("[+] Moving Terminal-Icons module ...\n");
-    rename("C:\\LegacyApp\\powershell\\PowerShell-master\\Modules\\Terminal-Icons","C:\\LegacyApp\\powershell\\Modules\\Terminal-Icons");
+    clear_buffer(cmd_buffer);
+    snprintf(cmd_buffer,MAX_PATH,"%s\\PowerShell-master\\Modules\\Terminal-Icons",fullPathProfile);
+    move_file(cmd_buffer,"C:\\LegacyApp\\powershell\\Modules\\");
     printf("[+] Moving Terminal settings ...\n");
-    move_file(OWN_TERMINAL,TERMINAL_SETTINGS);
+    clear_buffer(cmd_buffer);
+    snprintf(cmd_buffer,MAX_PATH,"%s\\PowerShell-master\\terminal_settings.json",fullPathProfile);
+    move_file(cmd_buffer,TERMINAL_SETTINGS_PC);
     printf("[+] Lilex Font Installation ...\n");
     system("start https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/Lilex.zip");
     system("mkdir \"%USERPROFILE%/Downloads/fonts\"");
