@@ -31,7 +31,7 @@ int createPwshProfile(){
 int getLatestRelease(const char *target,const char *installationPath,const char *pattern,const char *output,const char *folderName) {
     char command[1024];
     const char *tempFile = "release.json";
-    snprintf(command,sizeof(command),"curl.exe -s %s > %s",target,tempFile);
+    snprintf(command,sizeof(command),"curl.exe -k -s %s > %s",target,tempFile);
     system(command);
     FILE *file = fopen(tempFile,"r"); // open the file in read mode, holds the content of the file.
     if(file == NULL){
@@ -53,7 +53,7 @@ int getLatestRelease(const char *target,const char *installationPath,const char 
         if(downloadLink && pattern_match) {
             char *quote = strchr(lineBuffer, ':');
             char *urlLink = quote + 1; // Move past the colon
-            snprintf(command,sizeof(command),"curl.exe -L -o %s\\%s %s",installationPath,output,urlLink);
+            snprintf(command,sizeof(command),"curl.exe -k -L -o %s\\%s %s",installationPath,output,urlLink);
             system(command);
             command[0] = '\0'; // Clear the command buffer
             if(folderName != NULL) {
@@ -99,7 +99,7 @@ int moveIconsFolder(){
 int installLilexFont(){
     printf("_> Installing Lilex font...\n");
     char command[1024];
-    snprintf(command, sizeof(command), "curl.exe -L -o lilex.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/Lilex.zip");
+    snprintf(command, sizeof(command), "curl.exe -k -L -o lilex.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/Lilex.zip");
     if(system(command) != 0) {
         repChar("!", 70); // Print a line of equal signs
         printf("[!] WARNING: Failed to download Lilex font.\n");
