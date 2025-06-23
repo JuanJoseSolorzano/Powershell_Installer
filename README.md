@@ -17,9 +17,9 @@ Welcome to the **PowerShell Suite Installer**! This tool automates the setup of 
 ## 🛠️ Usage
 
 1. **Run the Installer**
-   - Double-click the executable or run from terminal:
+   - Compile the executable file:
      ```sh
-     PowerShellInstaller.exe
+     gcc -g .\main.c .\lib\fileio.c .\lib\helpers.c .\lib\sources\icon.o -o powershell_installer.exe
      ```
 2. **Follow On-Screen Prompts**
    - The installer will:
@@ -35,7 +35,7 @@ Welcome to the **PowerShell Suite Installer**! This tool automates the setup of 
 
 - Windows 11
 - Internet connection
-- Administrator privileges (for font and terminal settings)
+- gcc compiler.
 
 ---
 
@@ -74,4 +74,4 @@ PowerShell_Installer/
 
 ---
 
-> Made with ❤️ for Windows Power Users!
+> Made with for Windows Power Users!

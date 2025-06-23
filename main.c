@@ -15,6 +15,9 @@ int main(int argc, char *argv[]) {
     if(folderExists(POWERSHELL_INSTALLATION_PATH) == 1) {
         printf("_> PowerShell Suite already installed at %s\n", POWERSHELL_INSTALLATION_PATH);
         printf("_> Overwriting installation...\n");
+        system("rmdir /s /q powershell");
+        system("rmdir /s /q Powershell_Suite");
+        system("del C:\\Users\\juanj\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json");
     }
     if(getLatestRelease(POWERSHELL_LINK,"C:\\LegacyApp","win-x64.zip","powershell.zip","powershell") == 1)
         printf("_> PowerShell Suite installation complete.\n");
